@@ -1,0 +1,32 @@
+<div>
+  <a href="/">Inventory</a>
+  |
+  <a href="/items/new">Add Parts</a>
+</div>
+
+<style>
+  #itemlist {
+    display: flex;
+  }
+  .item {
+    width: 250px;
+    height: 250px;
+    border-right: 2px solid black;
+  }
+</style>
+
+<hr>
+
+<div id="itemlist">
+  <% items.forEach(item => { %>
+    <div class="item">
+      <div>
+        <a href="/items/<%= item.id %>"><%= item.name %></a>
+      </div>
+      <div>
+        Amount: <%= item.amount %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
