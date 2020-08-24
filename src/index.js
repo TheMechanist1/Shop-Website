@@ -1,10 +1,8 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const asyncHandler = require('express-async-handler');
 
 const database = require('./database');
 const upload = require('./upload');
-const csrfProtection = require('./csrf');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -19,7 +17,7 @@ const newItemUpload = upload.fields([
   { name: 'image', maxCount: 1 },
 ]);
 
-app.use(newItemUpload);
+// app.use(newItemUpload);
 
 // Serve simple static files
 app.use(express.static('static'));
@@ -27,11 +25,11 @@ app.use(express.static('static'));
 // Serve simple static uploads
 app.use('/uploads/', express.static('uploads'));
 
-// Enable CSRF protection
-app.use(csrfProtection);
+app.use(require('./session'));
 
-// Require user authentication for all following routes
-app.use(require('./auth'));
+app.use(require('./csrf'));
+
+app.use(require('./authentication'));
 
 // See all the items
 app.get('/', asyncHandler(async (req, res) => {

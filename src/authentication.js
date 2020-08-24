@@ -1,11 +1,9 @@
 const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const {OAuth2Client} = require('google-auth-library');
 const asyncHandler = require('express-async-handler');
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || null;
-const SECRET = process.env.SECRET || 'top sneaky';
 const DOMAIN = process.env.DOMAIN || null;
 
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -48,17 +46,6 @@ async function verify(token) {
     picture,
   };
 }
-
-router.use(session({
-  secret: SECRET,
-  saveUninitialized: false,
-  resave: false, // todo: change this when we choose a store
-  cookie: {
-    httpOnly: true,
-    sameSite: true,
-    secure: 'auto'
-  }
-}));
 
 router.use((req, res, next) => {
   const render = res.render;
