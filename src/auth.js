@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const {OAuth2Client} = require('google-auth-library');
 const asyncHandler = require('express-async-handler');
 
-const GOOGLE_CLIENT_ID = process.env.CLIENT_ID || null;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || null;
 const SECRET = process.env.SECRET || 'top sneaky';
 const DOMAIN = process.env.DOMAIN || null;
 
