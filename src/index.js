@@ -1,5 +1,6 @@
 const express = require('express');
 const asyncHandler = require('express-async-handler');
+const bodyParser = require('body-parser');
 
 const database = require('./database');
 const upload = require('./upload');
@@ -11,24 +12,25 @@ app.set('view engine', 'ejs');
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 
-const newItemUpload = upload.fields([
-  { name: 'name', },
-  { name: 'amount' },
-  { name: 'image', maxCount: 1 },
-]);
-
-// app.use(newItemUpload);
-
 // Serve simple static files
 app.use(express.static('static'));
 
 // Serve simple static uploads
 app.use('/uploads/', express.static('uploads'));
 
+// Implement session cookies
 app.use(require('./session'));
 
+// Implement file uploading
+app.use(upload.any());
+
+// Implement form parsing, needed for CSRF protection
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Implement CSRF protection
 app.use(require('./csrf'));
 
+// Implement user authentication
 app.use(require('./authentication'));
 
 // See all the items
@@ -71,7 +73,7 @@ app.post('/new', asyncHandler(async (req, res) => {
 
   item.name = req.body.name;
   item.amount = +req.body.amount;
-  item.images = [req.files.image[0].filename];
+  item.images = [req.files[0].filename];
 
   res.redirect(`/items/${item.id}`);
 }));
