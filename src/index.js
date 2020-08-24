@@ -1,14 +1,13 @@
 const express = require('express');
-const multer = require('multer');
 const asyncHandler = require('express-async-handler');
 
 const database = require('./database');
-
-const upload = multer({ dest: 'uploads' });
+const upload = require('./upload');
 
 const app = express();
 app.set('view engine', 'ejs');
 // Configure routing to be more strict than it is by default.
+// This fixes some common footguns
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 
