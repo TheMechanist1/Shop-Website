@@ -4,16 +4,6 @@ const AUTH_METHOD = process.env.AUTH_METHOD || null;
 
 const router = express.Router();
 
-router.use((req, res, next) => {
-  const render = res.render;
-  res.render = function(name, locals, callback) {
-    locals = locals || {};
-    locals.session = req.session;
-    render.call(this, name, locals, callback);
-  };
-  next();
-});
-
 if (AUTH_METHOD === 'google') {
   router.use('/login/google', require('./google'));
 }

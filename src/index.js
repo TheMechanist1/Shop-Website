@@ -29,6 +29,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Implement CSRF protection
 app.use(require('./csrf'));
 
+// Implement "render properties"
+app.use(require('./render-props'));
+
 // Implement user authentication
 // All routes below this point may require authentication to access
 app.use(require('./authentication'));
