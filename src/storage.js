@@ -37,4 +37,5 @@ module.exports = {
   const item = await newItem();
   item.name = 'Test Item 1';
   item.amount = 3;
+  item.images = ['3b987a286b05be2e5288624762c02f38'];
 })();

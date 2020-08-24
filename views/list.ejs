@@ -1,8 +1,4 @@
-<div>
-  <a href="/">Inventory</a>
-  |
-  <a href="/new">Add Parts</a>
-</div>
+<%- include('partials/nav') %>
 
 <style>
   #itemlist {
@@ -15,11 +11,12 @@
   }
 </style>
 
-<hr>
-
 <div id="itemlist">
   <% items.forEach(item => { %>
     <div class="item">
+      <div>
+        <img src="/uploads/<%= item.images[0] %>" width="100%" height="100%">
+      </div>
       <div>
         <a href="/items/<%= item.id %>"><%= item.name %></a>
       </div>

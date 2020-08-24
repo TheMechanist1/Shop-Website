@@ -1,8 +1,16 @@
+<%- include('partials/nav') %>
+
 <h1><%= item.name %></h1>
+
+<% item.images.forEach(img => { %>
+  <div>
+    <img src="/uploads/<%= img %>">
+  </div>
+<% }) %>
 
 <ul>
   <li>ID: <%= item.id %></li>
-  <li>Quantity: <%= item.amount %></li>
+  <li>Amount: <%= item.amount %></li>
 </ul>
 
 <form action="/items/<%= item.id %>/delete" method="POST">

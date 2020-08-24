@@ -54,7 +54,7 @@ app.post('/new', newItemUpload, asyncHandler(async (req, res) => {
 
   item.name = req.body.name;
   item.amount = +req.body.amount;
-  item.images = [req.files.image[0]];
+  item.images = [req.files.image[0].filename];
 
   res.redirect(`/items/${item.id}`);
 }));
