@@ -2,25 +2,30 @@ const express = require('express');
 const multer = require('multer');
 const asyncHandler = require('express-async-handler');
 
-const storage = require('./storage');
+const database = require('./database');
 
 const upload = multer({ dest: 'uploads' });
 
 const app = express();
+app.set('view engine', 'ejs');
+// Configure routing to be more strict than it is by default.
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
-app.set('view engine', 'ejs');
 
+// Serve simple static files
+app.use(express.static('static'));
+
+// Require user authentication for all following routes.
 app.use(require('./auth'));
 
 app.use('/uploads/', express.static('uploads'));
 
 app.get('/', asyncHandler(async (req, res) => {
-  const allItemIds = await storage.getAllItems();
+  const allItemIds = await database.getAllItems();
 
   const items = [];
   for (const id of allItemIds) {
-    items.push(await storage.getItem(id));
+    items.push(await database.getItem(id));
   }
 
   res.render('list', {
@@ -30,7 +35,7 @@ app.get('/', asyncHandler(async (req, res) => {
 
 app.get('/items/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const item = await storage.getItem(id);
+  const item = await database.getItem(id);
   res.render('item', {
     item: item
   });
@@ -38,7 +43,7 @@ app.get('/items/:id', asyncHandler(async (req, res) => {
 
 app.post('/items/:id/delete', asyncHandler(async (req, res) => {
   const id = req.params.id;
-  await storage.deleteItem(id);
+  await database.deleteItem(id);
   res.redirect('/');
 }));
 
@@ -52,7 +57,7 @@ const newItemUpload = upload.fields([
   { name: 'image', maxCount: 1 },
 ]);
 app.post('/new', newItemUpload, asyncHandler(async (req, res) => {
-  const item = await storage.newItem();
+  const item = await database.newItem();
 
   item.name = req.body.name;
   item.amount = +req.body.amount;
