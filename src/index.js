@@ -11,6 +11,8 @@ app.set('case sensitive routing', true);
 app.set('strict routing', true);
 app.set('view engine', 'ejs');
 
+app.use(require('./auth'));
+
 app.use('/uploads/', express.static('uploads'));
 
 app.get('/', asyncHandler(async (req, res) => {
