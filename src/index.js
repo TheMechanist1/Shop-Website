@@ -13,17 +13,28 @@ app.set('view engine', 'ejs');
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 
+const newItemUpload = upload.fields([
+  { name: 'name', },
+  { name: 'amount' },
+  { name: 'image', maxCount: 1 },
+]);
+
+app.use(newItemUpload);
+
 // Serve simple static files
 app.use(express.static('static'));
 
 // Serve simple static uploads
 app.use('/uploads/', express.static('uploads'));
 
+// Enable CSRF protection
+app.use(csrfProtection);
+
 // Require user authentication for all following routes
 app.use(require('./auth'));
 
 // See all the items
-app.get('/', csrfProtection, asyncHandler(async (req, res) => {
+app.get('/', asyncHandler(async (req, res) => {
   const allItemIds = await database.getAllItems();
 
   const items = [];
@@ -37,7 +48,7 @@ app.get('/', csrfProtection, asyncHandler(async (req, res) => {
 }));
 
 // Get information for a specific item
-app.get('/items/:id', csrfProtection, asyncHandler(async (req, res) => {
+app.get('/items/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
   const item = await database.getItem(id);
   res.render('item', {
@@ -46,23 +57,18 @@ app.get('/items/:id', csrfProtection, asyncHandler(async (req, res) => {
 }));
 
 // Delete an item
-app.post('/items/:id/delete', csrfProtection, asyncHandler(async (req, res) => {
+app.post('/items/:id/delete', asyncHandler(async (req, res) => {
   const id = req.params.id;
   await database.deleteItem(id);
   res.redirect('/');
 }));
 
 // Create a new item
-app.get('/new', csrfProtection, (req, res) => {
+app.get('/new', (req, res) => {
   res.render('new');
 });
 
-const newItemUpload = upload.fields([
-  { name: 'name', },
-  { name: 'amount' },
-  { name: 'image', maxCount: 1 },
-]);
-app.post('/new', newItemUpload, csrfProtection, asyncHandler(async (req, res) => {
+app.post('/new', asyncHandler(async (req, res) => {
   const item = await database.newItem();
 
   item.name = req.body.name;

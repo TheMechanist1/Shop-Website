@@ -3,10 +3,10 @@ const path = require('path');
 const { v4: uuid } = require('uuid');
 
 const storage = multer.diskStorage({
-  destination: function(req, res, callback) {
+  destination: (req, res, callback) => {
     callback(null, 'uploads/');
   },
-  filename: function (req, file, callback) {
+  filename: (req, file, callback) => {
     const parsedFilename = path.parse(file.originalname);
     const filenameSafe = parsedFilename.name
       // Spaces become underscore
