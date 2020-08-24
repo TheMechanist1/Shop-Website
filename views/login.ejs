@@ -29,7 +29,8 @@
     <div id="userinfo"></div>
   </div>
 
-  <form method="POST">
+  <form action="/login/google" method="POST">
+    <%- include('partials/csrf') %>
     <input name="token">
   </form>
 
@@ -38,15 +39,8 @@
     const userInfo = document.getElementById('userinfo');
 
     function signInWithToken(token) {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/login/google');
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.onload = function() {
-        if (xhr.responseText === 'ok') {
-          location.pathname = '/';
-        }
-      };
-      xhr.send('token=' + token);
+      document.querySelector('input[name=token]').value = token;
+      document.querySelector('form').submit();
     }
 
     gapi.load('auth2', () => {

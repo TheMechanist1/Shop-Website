@@ -10,6 +10,7 @@ const DOMAIN = process.env.DOMAIN || null;
 
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 const router = express.Router();
+const csrfProtection = require('./csrf');
 
 /**
  * Verifies a Google ID token.
@@ -70,18 +71,18 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post('/login/google', bodyParser.urlencoded({ extended: false }), asyncHandler(async (req, res) => {
+router.post('/login/google', csrfProtection, asyncHandler(async (req, res) => {
   try {
     const account = await verify(req.body.token);
     req.session.isSignedIn = true;
     req.session.user = account;
-    res.send('ok');
+    res.redirect('/');
   } catch (e) {
-    res.status(400).send('not ok');
+    res.status(400).send('Could not sign in. Press back to try again.');
   }
 }));
 
-router.get('/login', (req, res) => {
+router.get('/login', csrfProtection, (req, res) => {
   if (req.session.isSignedIn) {
     res.redirect('/');
     return;
@@ -92,7 +93,7 @@ router.get('/login', (req, res) => {
   });
 });
 
-router.get('/logout', (req, res) => {
+router.post('/logout', csrfProtection, (req, res) => {
   req.session.destroy(function(err) {
     if (err) {
       console.error(err);

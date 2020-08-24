@@ -23,7 +23,7 @@ app.use('/uploads/', express.static('uploads'));
 app.use(require('./auth'));
 
 // See all the items
-app.get('/', asyncHandler(async (req, res) => {
+app.get('/', csrfProtection, asyncHandler(async (req, res) => {
   const allItemIds = await database.getAllItems();
 
   const items = [];
