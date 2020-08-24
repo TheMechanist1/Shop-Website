@@ -1,6 +1,7 @@
 const express = require('express');
 const asyncHandler = require('express-async-handler');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 
 const database = require('./database');
 
@@ -10,6 +11,16 @@ app.set('view engine', 'ejs');
 // This fixes some common footguns
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
+// Remove the x-powered-by header
+app.disable('x-powered-by');
+
+// Enable some security related headers
+app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
+app.use(helmet.noSniff());
+app.use(helmet.dnsPrefetchControl({ allow: false }));
+app.use(helmet.ieNoOpen());
+app.use(helmet.frameguard({ action: 'deny' }));
+app.use(helmet.xssFilter());
 
 // Serve simple static files
 app.use(express.static('static'));
