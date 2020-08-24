@@ -4,11 +4,19 @@ const bodyParser = require('body-parser');
 const {OAuth2Client} = require('google-auth-library');
 const asyncHandler = require('express-async-handler');
 
-const GOOGLE_CLIENT_ID = '156261425647-fqf94ed5k1fu40sjl4q20m1u8dauhg6o.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = process.env.CLIENT_ID || null;
+const SECRET = process.env.SECRET || 'top sneaky';
+const DOMAIN = process.env.DOMAIN || null;
 
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 const router = express.Router();
 
+/**
+ * Verifies a Google ID token.
+ * @param {string} token The ID token to verify
+ * @throws Will throw if the token is not valid.
+ * @returns Information about the user.
+ */
 async function verify(token) {
   const ticket = await client.verifyIdToken({
     idToken: token,
@@ -20,8 +28,13 @@ async function verify(token) {
     throw new Error('Email is not verified.');
   }
 
-  const domain = payload.hd;
-  // todo: check if domain is in whitelist
+  // If domain checking is enabled, check the domain.
+  if (DOMAIN) {
+    const domain = payload.hd;
+    if (domain !== DOMAIN) {
+      throw new Error('Domain does not match expected value');
+    }
+  }
 
   const userid = payload.sub;
   const email = payload.email;
@@ -37,7 +50,7 @@ async function verify(token) {
 }
 
 router.use(session({
-  secret: 'keyboard cat',
+  secret: SECRET,
   saveUninitialized: false,
   resave: false, // todo: change this when we choose a store
 }));
@@ -94,4 +107,9 @@ router.use((req, res, next) => {
   }
 });
 
-module.exports = router;
+// If no client ID is set, auth is disabled.
+if (GOOGLE_CLIENT_ID === null) {
+  module.exports = (req, res, next) => next();
+} else {
+  module.exports = router;
+}
