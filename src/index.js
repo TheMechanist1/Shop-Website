@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
+const asyncHandler = require('express-async-handler');
 
 const storage = require('./storage');
 
@@ -13,25 +13,34 @@ app.set('view engine', 'ejs');
 
 app.use('/uploads/', express.static('uploads'));
 
-app.get('/', (req, res) => {
-  res.render('list', {
-    items: storage,
-  });
-});
+app.get('/', asyncHandler(async (req, res) => {
+  const allItemIds = await storage.getAllItems();
 
-app.get('/items/:id(\\d+)', (req, res) => {
+  const items = [];
+  for (const id of allItemIds) {
+    items.push(await storage.getItem(id));
+  }
+
+  res.render('list', {
+    items: items,
+  });
+}));
+
+app.get('/items/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const item = storage[id];
+  const item = await storage.getItem(id);
   res.render('item', {
     item: item
   });
-});
+}));
 
-app.post('/items/:id/delete', (req, res) => {
+app.post('/items/:id/delete', asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  await storage.deleteItem(id);
   res.redirect('/');
-});
+}));
 
-app.get('/items/new', (req, res) => {
+app.get('/new', (req, res) => {
   res.render('new');
 });
 
@@ -40,17 +49,15 @@ const newItemUpload = upload.fields([
   { name: 'amount' },
   { name: 'image', maxCount: 1 },
 ]);
-app.post('/items/new', newItemUpload, (req, res) => {
-  const id = storage.length++;
-  storage[id] = {
-    id,
-    name: req.body.name,
-    amount: req.body.amount
-  };
-  console.log(req.body);
-  console.log(req.files);
-  res.redirect('/items/' + id);
-});
+app.post('/new', newItemUpload, asyncHandler(async (req, res) => {
+  const item = await storage.newItem();
+
+  item.name = req.body.name;
+  item.amount = +req.body.amount;
+  item.images = [req.files.image[0]];
+
+  res.redirect(`/items/${item.id}`);
+}));
 
 const server = app.listen(8080, function() {
   console.log(`Listening on http://localhost:${server.address().port}`);
