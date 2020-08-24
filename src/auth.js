@@ -22,6 +22,8 @@ async function verify(token) {
 
 router.use(session({
   secret: 'keyboard cat',
+  saveUninitialized: false,
+  resave: false, // todo: change this when we choose a store
   cookie: {
     maxAge: 60000
   }
@@ -30,7 +32,7 @@ router.use(session({
 router.post('/login/google', bodyParser.urlencoded({ extended: false }), asyncHandler(async (req, res) => {
   try {
     await verify(req.body.token);
-    req.session.valid = true;
+    req.session.isSignedIn = true;
     res.send('ok');
   } catch (e) {
     res.status(400).send('not ok');
@@ -38,11 +40,30 @@ router.post('/login/google', bodyParser.urlencoded({ extended: false }), asyncHa
 }));
 
 router.get('/login', (req, res) => {
-  res.render('login');
+  if (req.session.isSignedIn) {
+    res.redirect('/');
+    return;
+  }
+
+  res.render('login', {
+    GOOGLE_CLIENT_ID
+  });
+});
+
+router.get('/logout', (req, res) => {
+  req.session.destroy(function(err) {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Could not log you out.');
+      return;
+    }
+
+    res.redirect('/login?loggedout');
+  });
 });
 
 router.use((req, res, next) => {
-  if (req.session.valid) {
+  if (req.session.isSignedIn) {
     next();
   } else {
     res.redirect('/login');

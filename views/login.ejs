@@ -1,16 +1,44 @@
+<!DOCTYPE html>
+<html>
 <head>
-  <meta name="google-signin-client_id" content="156261425647-fqf94ed5k1fu40sjl4q20m1u8dauhg6o.apps.googleusercontent.com">
-  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://apis.google.com/js/api:client.js"></script>
+  <style>
+    #log-in, #logging-in {
+      display: none;
+    }
+    .not-logged-in #log-in {
+      display: initial;
+    }
+    .signing-in #logging-in {
+      display: initial;
+    }
+    form {
+      display: none;
+    }
+  </style>
 </head>
+<body class="not-logged-in">
+  <div id="log-in">
+    <p>You must sign in.</p>
+    <div id="button">
+      <button>Sign In With Google</button>
+    </div>
+  </div>
 
-<body>
-  <div class="g-signin2" data-onsuccess="onSignIn"></div>
+  <div id="logging-in">
+    <div id="userinfo"></div>
+  </div>
+
+  <form method="POST">
+    <input name="token">
+  </form>
 
   <script>
-    function onSignIn(googleUser) {
-      var token = googleUser.getAuthResponse().id_token;
+    const button = document.getElementById('button');
+    const userInfo = document.getElementById('userinfo');
 
-      var xhr = new XMLHttpRequest();
+    function signInWithToken(token) {
+      const xhr = new XMLHttpRequest();
       xhr.open('POST', '/login/google');
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       xhr.onload = function() {
@@ -20,5 +48,25 @@
       };
       xhr.send('token=' + token);
     }
+
+    gapi.load('auth2', () => {
+      const auth2 = gapi.auth2.init({
+        client_id: '<%= GOOGLE_CLIENT_ID %>'
+      });
+
+      auth2.attachClickHandler(button, {}, (googleUser) => {
+        const name = googleUser.getBasicProfile().getName();
+        const token = googleUser.getAuthResponse().id_token;
+
+        document.body.className = 'signing-in';
+        userInfo.textContent = `Signing in as ${name}...`;
+
+        signInWithToken(token);
+      }, (error) => {
+        console.error(error);
+        alert('There was an error signing in.');
+      });
+    });
   </script>
 </body>
+</html>
