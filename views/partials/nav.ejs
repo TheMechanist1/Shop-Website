@@ -1,0 +1,15 @@
+<nav id="nav">
+  <a href="/">Inventory</a>
+  |
+  <a href="/new">Add Parts</a>
+
+  <% if (session.user) { %>
+    <form style="float: right" action="/logout" method="POST">
+      <%- include('csrf') %>
+      Logged in as <%= session.user.name %>.
+      <button type="submit">Logout</button>
+    </form>
+  <% } %>
+</nav>
+
+<hr>

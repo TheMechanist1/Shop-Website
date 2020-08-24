@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://apis.google.com/js/api:client.js"></script>
+  <style>
+    #log-in, #logging-in {
+      display: none;
+    }
+    .not-logged-in #log-in {
+      display: initial;
+    }
+    .signing-in #logging-in {
+      display: initial;
+    }
+    form {
+      display: none;
+    }
+  </style>
+</head>
+<body class="not-logged-in">
+  <div id="log-in">
+    <p>You must sign in.</p>
+    <div id="button">
+      <button>Sign In With Google</button>
+    </div>
+  </div>
+
+  <div id="logging-in">
+    <div id="userinfo"></div>
+  </div>
+
+  <form action="/login/google" method="POST">
+    <%- include('../partials/csrf') %>
+    <input name="token">
+  </form>
+
+  <script>
+    const button = document.getElementById('button');
+    const userInfo = document.getElementById('userinfo');
+
+    function signInWithToken(token) {
+      document.querySelector('input[name=token]').value = token;
+      document.querySelector('form').submit();
+    }
+
+    gapi.load('auth2', () => {
+      const auth2 = gapi.auth2.init({
+        client_id: '<%= GOOGLE_CLIENT_ID %>'
+      });
+
+      auth2.attachClickHandler(button, {}, (googleUser) => {
+        const name = googleUser.getBasicProfile().getName();
+        const token = googleUser.getAuthResponse().id_token;
+
+        document.body.className = 'signing-in';
+        userInfo.textContent = `Signing in as ${name}...`;
+
+        signInWithToken(token);
+      }, (error) => {
+        console.error(error);
+        alert('There was an error signing in.');
+      });
+    });
+  </script>
+</body>
+</html>

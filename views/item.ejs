@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/nav') %>
+
+  <h1><%= item.name %></h1>
+
+  <% item.images.forEach(img => { %>
+    <div>
+      <img src="/uploads/<%= img %>">
+    </div>
+  <% }) %>
+
+  <ul>
+    <li>ID: <%= item.id %></li>
+    <li>Amount: <%= item.amount %></li>
+  </ul>
+
+  <form action="/items/<%= item.id %>/delete" method="POST">
+    <%- include('partials/csrf') %>
+    <input type="submit" value="Delete">
+  </form>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/nav') %>
+
+  <style>
+    #itemlist {
+      display: flex;
+    }
+    .item {
+      width: 250px;
+      height: 250px;
+      border-right: 2px solid black;
+    }
+  </style>
+
+  <div id="itemlist">
+    <% items.forEach(item => { %>
+      <div class="item">
+        <div>
+          <img src="/uploads/<%= item.images[0] %>" width="100%" height="100%">
+        </div>
+        <div>
+          <a href="/items/<%= item.id %>"><%= item.name %></a>
+        </div>
+        <div>
+          Amount: <%= item.amount %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</body>
+</html>

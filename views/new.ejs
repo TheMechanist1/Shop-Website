@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <form action="/new" method="POST" enctype="multipart/form-data">
+    <%- include('partials/csrf') %>
+    <div>
+      <label>Name <input name="name"></label>
+    </div>
+    <div>
+      <label>Amount <input name="amount"></label>
+    </div>
+    <div>
+      <label>Image <input name="image" type="file"></label>
+    </div>
+    <input type="submit" value="Submit">
+  </form>
+</body>
+</html>
