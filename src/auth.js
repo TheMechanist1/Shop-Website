@@ -11,28 +11,52 @@ const router = express.Router();
 
 async function verify(token) {
   const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: GOOGLE_CLIENT_ID,
+    idToken: token,
+    audience: GOOGLE_CLIENT_ID,
   });
   const payload = ticket.getPayload();
-  const userid = payload['sub'];
-  const domain = payload['hd'];
-  // todo: verify
+
+  if (!payload.email_verified) {
+    throw new Error('Email is not verified.');
+  }
+
+  const domain = payload.hd;
+  // todo: check if domain is in whitelist
+
+  const userid = payload.sub;
+  const email = payload.email;
+  const name = payload.name;
+  const picture = payload.picture;
+
+  return {
+    userid,
+    email,
+    name,
+    picture,
+  };
 }
 
 router.use(session({
   secret: 'keyboard cat',
   saveUninitialized: false,
   resave: false, // todo: change this when we choose a store
-  cookie: {
-    maxAge: 60000
-  }
 }));
+
+router.use((req, res, next) => {
+  const render = res.render;
+  res.render = function(name, locals, callback) {
+    locals = locals || {};
+    locals.session = req.session;
+    render.call(this, name, locals, callback);
+  };
+  next();
+});
 
 router.post('/login/google', bodyParser.urlencoded({ extended: false }), asyncHandler(async (req, res) => {
   try {
-    await verify(req.body.token);
+    const account = await verify(req.body.token);
     req.session.isSignedIn = true;
+    req.session.user = account;
     res.send('ok');
   } catch (e) {
     res.status(400).send('not ok');

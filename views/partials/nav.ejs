@@ -1,9 +1,14 @@
-<div>
+<nav id="nav">
   <a href="/">Inventory</a>
   |
   <a href="/new">Add Parts</a>
-  |
-  <a href="/logout">Logout</a>
-</div>
+
+  <% if (typeof session !== 'undefined') { %>
+    <div style="float: right;">
+      Logged in as <%= session.user.name %>.
+      <a href="/logout">Logout</a>
+    </div>
+  <% } %>
+</nav>
 
 <hr>
