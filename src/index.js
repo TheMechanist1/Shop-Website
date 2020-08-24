@@ -1,8 +1,10 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const asyncHandler = require('express-async-handler');
 
 const database = require('./database');
 const upload = require('./upload');
+const csrfProtection = require('./csrf');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -14,11 +16,15 @@ app.set('strict routing', true);
 // Serve simple static files
 app.use(express.static('static'));
 
-// Require user authentication for all following routes.
-app.use(require('./auth'));
-
+// Serve simple static uploads
 app.use('/uploads/', express.static('uploads'));
 
+// Require user authentication for all following routes
+app.use(require('./auth'));
+
+app.use(csrfProtection);
+
+// See all the items
 app.get('/', asyncHandler(async (req, res) => {
   const allItemIds = await database.getAllItems();
 
@@ -32,6 +38,7 @@ app.get('/', asyncHandler(async (req, res) => {
   });
 }));
 
+// Get information for a specific item
 app.get('/items/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
   const item = await database.getItem(id);
@@ -40,12 +47,14 @@ app.get('/items/:id', asyncHandler(async (req, res) => {
   });
 }));
 
+// Delete an item
 app.post('/items/:id/delete', asyncHandler(async (req, res) => {
   const id = req.params.id;
   await database.deleteItem(id);
   res.redirect('/');
 }));
 
+// Create a new item
 app.get('/new', (req, res) => {
   res.render('new');
 });

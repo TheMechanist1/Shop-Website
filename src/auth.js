@@ -55,6 +55,7 @@ router.use(session({
   resave: false, // todo: change this when we choose a store
   cookie: {
     httpOnly: true,
+    sameSite: true,
     secure: 'auto'
   }
 }));

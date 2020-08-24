@@ -20,6 +20,7 @@
   </ul>
 
   <form action="/items/<%= item.id %>/delete" method="POST">
+    <%- include('partials/csrf') %>
     <input type="submit" value="Delete">
   </form>
 </body>
