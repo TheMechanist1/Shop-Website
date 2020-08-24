@@ -31,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(require('./csrf'));
 
 // Implement user authentication
+// All routes below this point may require authentication to access
 app.use(require('./authentication'));
 
 // See all the items
