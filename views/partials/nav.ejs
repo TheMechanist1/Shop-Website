@@ -3,7 +3,7 @@
   |
   <a href="/new">Add Parts</a>
 
-  <% if (typeof session !== 'undefined') { %>
+  <% if (typeof session !== 'undefined' && session.user) { %>
     <form style="float: right" action="/logout" method="POST">
       <%- include('csrf') %>
       Logged in as <%= session.user.name %>.

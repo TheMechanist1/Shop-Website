@@ -14,11 +14,7 @@ router.use((req, res, next) => {
   next();
 });
 
-if (AUTH_METHOD === 'google') {
-  router.use('/login/google', require('./google'));
-}
-
-router.post('/logout', (req, res) => {
+const handleLogout = (req, res) => {
   req.session.destroy(function(err) {
     if (err) {
       console.error(err);
@@ -27,22 +23,35 @@ router.post('/logout', (req, res) => {
     }
     res.redirect('/login');
   });
-});
+};
 
-router.get('/login', (req, res) => {
+const handleLogin = (req, res) => {
   if (AUTH_METHOD === null) {
     res.redirect('/');
   } else {
     res.redirect(`/login/${AUTH_METHOD}`);
   }
-});
+};
 
-router.use((req, res, next) => {
+const requireAuthentication = (req, res, next) => {
   if (req.session.isSignedIn) {
     next();
   } else {
     res.redirect('/login');
   }
-});
+};
+
+if (AUTH_METHOD === 'google') {
+  router.use('/login/google', require('./google'));
+}
+
+if (AUTH_METHOD === null) {
+  router.get('/logout', (req, res) => res.redirect('/'));
+  router.get('/login', (req, res) => res.redirect('/'));
+} else {
+  router.post('/logout', handleLogout);
+  router.get('/login', handleLogin);
+  router.use(requireAuthentication);
+}
 
 module.exports = router;

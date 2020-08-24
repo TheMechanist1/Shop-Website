@@ -3,7 +3,6 @@ const asyncHandler = require('express-async-handler');
 const bodyParser = require('body-parser');
 
 const database = require('./database');
-const upload = require('./upload');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -22,7 +21,7 @@ app.use('/uploads/', express.static('uploads'));
 app.use(require('./session'));
 
 // Implement file uploading
-app.use(upload.any());
+app.use(require('./upload').any());
 
 // Implement form parsing, needed for CSRF protection
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -64,11 +63,12 @@ app.post('/items/:id/delete', asyncHandler(async (req, res) => {
   res.redirect('/');
 }));
 
-// Create a new item
+// View form to create a new item
 app.get('/new', (req, res) => {
   res.render('new');
 });
 
+// Create a new item
 app.post('/new', asyncHandler(async (req, res) => {
   const item = await database.newItem();
 
