@@ -22,8 +22,6 @@ app.use('/uploads/', express.static('uploads'));
 // Require user authentication for all following routes
 app.use(require('./auth'));
 
-app.use(csrfProtection);
-
 // See all the items
 app.get('/', asyncHandler(async (req, res) => {
   const allItemIds = await database.getAllItems();
@@ -39,7 +37,7 @@ app.get('/', asyncHandler(async (req, res) => {
 }));
 
 // Get information for a specific item
-app.get('/items/:id', asyncHandler(async (req, res) => {
+app.get('/items/:id', csrfProtection, asyncHandler(async (req, res) => {
   const id = req.params.id;
   const item = await database.getItem(id);
   res.render('item', {
@@ -48,14 +46,14 @@ app.get('/items/:id', asyncHandler(async (req, res) => {
 }));
 
 // Delete an item
-app.post('/items/:id/delete', asyncHandler(async (req, res) => {
+app.post('/items/:id/delete', csrfProtection, asyncHandler(async (req, res) => {
   const id = req.params.id;
   await database.deleteItem(id);
   res.redirect('/');
 }));
 
 // Create a new item
-app.get('/new', (req, res) => {
+app.get('/new', csrfProtection, (req, res) => {
   res.render('new');
 });
 
@@ -64,7 +62,7 @@ const newItemUpload = upload.fields([
   { name: 'amount' },
   { name: 'image', maxCount: 1 },
 ]);
-app.post('/new', newItemUpload, asyncHandler(async (req, res) => {
+app.post('/new', newItemUpload, csrfProtection, asyncHandler(async (req, res) => {
   const item = await database.newItem();
 
   item.name = req.body.name;

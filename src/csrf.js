@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 
 router.use(cookieParser());
-router.use(bodyParser({ extended: false }));
+router.use(bodyParser.urlencoded({ extended: false }));
 router.use(csurf({
   cookie: {
     httpOnly: true,
