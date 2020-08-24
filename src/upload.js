@@ -7,7 +7,16 @@ const storage = multer.diskStorage({
     callback(null, 'uploads/');
   },
   filename: function (req, file, callback) {
-    callback(null, uuid() + path.extname(file.originalname));
+    const parsedFilename = path.parse(file.originalname);
+    const filenameSafe = parsedFilename.name
+      // Spaces become underscore
+      .replace(/\s/g, '_')
+      // Anything that is not alphanumeric, a hyphen, or underscore is removed
+      .replace(/[^-_a-zA-Z0-9]/g, '')
+      // Up to 20 characters
+      .substring(0, 20);
+    const extension = parsedFilename.ext;
+    callback(null, `${filenameSafe}.${uuid()}${extension}`);
   }
 });
 
