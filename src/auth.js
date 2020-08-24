@@ -53,6 +53,10 @@ router.use(session({
   secret: SECRET,
   saveUninitialized: false,
   resave: false, // todo: change this when we choose a store
+  cookie: {
+    httpOnly: true,
+    secure: 'auto'
+  }
 }));
 
 router.use((req, res, next) => {
