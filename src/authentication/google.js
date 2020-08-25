@@ -2,6 +2,8 @@ const express = require('express');
 const asyncHandler = require('express-async-handler');
 const {OAuth2Client} = require('google-auth-library');
 
+const User = require('./user');
+
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || null;
 const DOMAIN = process.env.DOMAIN || null;
 
@@ -28,17 +30,15 @@ async function verify(token) {
     }
   }
 
-  const userid = payload.sub;
-  const email = payload.email;
-  const name = payload.name;
-  const picture = payload.picture;
+  const user = new User(payload.name);
+  if (payload.email) {
+    user.email = payload.email;
+  }
+  if (payload.picture) {
+    user.picture = payload.picture;
+  }
 
-  return {
-    userid,
-    email,
-    name,
-    picture,
-  };
+  return user;
 }
 
 router.get('/', (req, res) => {
