@@ -4,33 +4,66 @@
   <%- include('partials/head') %>
 </head>
 <body>
-  <%- include('partials/nav') %>
-
   <style>
-    #itemlist {
-      display: flex;
-    }
-    .item {
-      width: 250px;
-      height: 250px;
-      border-right: 2px solid black;
-    }
+  .main-container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
+  .nav-container {
+    flex: 0 1 auto;
+  }
+  .panel-container {
+    flex: 1 1 auto;
+  }
+
+  .panel-container {
+    display: flex;
+    flex-flow: row;
+    flex: 1 1 auto;
+  }
+  .item-panel {
+    flex: 1 1 auto;
+  }
+  .info-panel {
+    flex: 0 0 200px;
+  }
+
+  .item {
+    padding: 0;
+    margin: 0;
+    display: block;
+    width: 250px;
+    height: 300px;
+  }
   </style>
 
-  <div id="itemlist">
-    <% items.forEach(item => { %>
-      <div class="item">
-        <div>
-          <img src="/uploads/<%= item.images[0] %>" width="100%" height="100%">
-        </div>
-        <div>
-          <a href="/items/<%= item.id %>"><%= item.name %></a>
-        </div>
-        <div>
-          Amount: <%= item.amount %>
-        </div>
+  <main class="main-container">
+    <div class="nav-container">
+      <%- include('partials/nav') %>
+    </div>
+    <div class="panel-container">
+      <div class="item-panel">
+        <% items.forEach(item => { %>
+          <li class="item">
+            <div>
+              <img src="/uploads/<%= item.images[0] %>" width="100%" height="100%">
+            </div>
+            <div>
+              <a href="/items/<%= item.id %>"><%= item.name %></a>
+            </div>
+            <div>
+              Amount: <%= item.amount %>
+            </div>
+          </li>
+        <% }) %>
       </div>
-    <% }) %>
-  </div>
+
+      <div class="info-panel">
+        Info Panel
+      </div>
+    </div>
+  </main>
+
 </body>
 </html>
