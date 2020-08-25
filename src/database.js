@@ -34,8 +34,24 @@ module.exports = {
 };
 
 (async () => {
-  const item = await newItem();
+  let item = await newItem();
   item.name = 'Test Item 1';
+  item.amount = 3;
+  item.images = ['3b987a286b05be2e5288624762c02f38'];
+  item = await newItem();
+  item.name = 'Test Item 2';
+  item.amount = 3;
+  item.images = ['3b987a286b05be2e5288624762c02f38'];
+  item = await newItem();
+  item.name = 'Test Item 3';
+  item.amount = 3;
+  item.images = ['3b987a286b05be2e5288624762c02f38'];
+  item = await newItem();
+  item.name = 'Test Item 4';
+  item.amount = 3;
+  item.images = ['3b987a286b05be2e5288624762c02f38'];
+  item = await newItem();
+  item.name = 'Test Item 5';
   item.amount = 3;
   item.images = ['3b987a286b05be2e5288624762c02f38'];
 })();
