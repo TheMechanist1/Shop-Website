@@ -15,7 +15,7 @@ nav {
   <% if (session.user) { %>
     <form style="float: right" action="/logout" method="POST">
       <%- include('csrf') %>
-      Logged in as <%= session.user.name %>.
+      Logged in as <%= session.user.name %>
       <button type="submit">Logout</button>
     </form>
   <% } %>
