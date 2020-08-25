@@ -29,7 +29,7 @@ app.use(express.static('static'));
 app.use('/uploads/', express.static('uploads'));
 
 // Implement session cookies
-app.use(require('./session'));
+app.use(require('./middleware/session'));
 
 // Implement file uploading
 app.use(require('./upload').any());
@@ -38,10 +38,10 @@ app.use(require('./upload').any());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Implement CSRF protection
-app.use(require('./csrf'));
+app.use(require('./middleware/csrf'));
 
 // Implement "render properties"
-app.use(require('./render-props'));
+app.use(require('./middleware/render-props'));
 
 // Implement user authentication
 // All routes below this point may require authentication to access
