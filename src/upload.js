@@ -1,10 +1,16 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const { v4: uuid } = require('uuid');
+
+const UPLOAD_DIR = 'uploads/';
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR);
+}
 
 const storage = multer.diskStorage({
   destination: (req, res, callback) => {
-    callback(null, 'uploads/');
+    callback(null, UPLOAD_DIR);
   },
   filename: (req, file, callback) => {
     const parsedFilename = path.parse(file.originalname);
