@@ -86,9 +86,16 @@ app.get('/new', (req, res) => {
 app.post('/new', asyncHandler(async (req, res) => {
   const item = await database.newItem();
 
-  item.name = req.body.name;
-  item.amount = +req.body.amount;
-  item.images = [req.files[0].filename];
+  item.name = req.body.name; // todo: error if not exists
+  item.amount = +req.body.amount || 0; // todo: no negatives, no decimals, no naughty numbers
+
+  if (req.files.length) {
+    item.images = [req.files[0].filename];
+  }
+  
+  if (req.body['part-number']) {
+    item.partNumber = req.body['part-number'];
+  }
 
   res.redirect(`/items/${item.id}`);
 }));
