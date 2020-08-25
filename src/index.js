@@ -19,7 +19,7 @@ app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
 app.use(helmet.noSniff());
 app.use(helmet.dnsPrefetchControl({ allow: false }));
 app.use(helmet.ieNoOpen());
-app.use(helmet.frameguard({ action: 'deny' }));
+app.use(helmet.frameguard({ action: 'sameorigin' }));
 app.use(helmet.xssFilter());
 
 // Serve simple static files

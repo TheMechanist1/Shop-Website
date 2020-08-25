@@ -3,10 +3,13 @@ nav {
   padding: 4px;
   border-bottom: 1px solid black;
 }
+.nav-divider::before {
+  content: ' | ';
+}
 </style>
 <nav id="nav">
   <a href="/">Inventory</a>
-  |
+  <span class="nav-divider"></span>
   <a href="/new">Add Parts</a>
 
   <% if (session.user) { %>
