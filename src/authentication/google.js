@@ -31,8 +31,13 @@ async function verify(token) {
   }
 
   const user = new User(payload.name);
+  // TODO: check email ends with @isd112.org
   if (payload.email) {
     user.email = payload.email;
+    // FIXME
+    if (payload.email === '22cooksleyd@isd112.org' || payload.email === 'tommyweber33@gmail.com') {
+      user.isAdmin = true;
+    }
   }
   if (payload.picture) {
     user.picture = payload.picture;
