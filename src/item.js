@@ -1,10 +1,10 @@
 class Item {
-  constructor(id) {
+  constructor(id, data = {}) {
     this.id = id;
-    this.name = '';
-    this.amount = 0;
-    this.partNumber = '';
-    this.images = [];
+    this.name = data.name ?? '';
+    this.amount = data.amount ?? 0;
+    this.partNumber = data.partNumber ?? '';
+    this.images = data.images ?? [];
   }
 }
 
