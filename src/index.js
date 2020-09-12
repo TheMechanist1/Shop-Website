@@ -34,7 +34,7 @@ app.use(require('./middleware/session'));
 // Implement file uploading
 app.use(require('./upload').any());
 
-// Implement form parsing, needed for CSRF protection
+// Implement form parsing, must happen before CSRF protection
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Implement CSRF protection
@@ -96,6 +96,8 @@ app.post('/new', asyncHandler(async (req, res) => {
   if (req.body['part-number']) {
     item.partNumber = req.body['part-number'];
   }
+
+  await database.setItem(item.id, item);
 
   res.redirect(`/items/${item.id}`);
 }));
