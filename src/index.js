@@ -32,6 +32,7 @@ app.use('/uploads/', express.static('uploads'));
 app.use(require('./middleware/session'));
 
 // Implement file uploading
+// TODO: move after auth?
 app.use(require('./upload').any());
 
 // Implement form parsing, must happen before CSRF protection
@@ -47,8 +48,12 @@ app.use(require('./middleware/render-props'));
 // All routes below this point may require authentication to access
 app.use(require('./authentication'));
 
+app.get('/', (req, res) => {
+  res.redirect('/inventory/');
+});
+
 // See all the items
-app.get('/', asyncHandler(async (req, res) => {
+app.get('/inventory/', asyncHandler(async (req, res) => {
   const allItemIds = await database.getAllItems();
 
   const items = [];
@@ -62,7 +67,7 @@ app.get('/', asyncHandler(async (req, res) => {
 }));
 
 // Get information for a specific item
-app.get('/items/:id', asyncHandler(async (req, res) => {
+app.get('/inventory/items/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
   const item = await database.getItem(id);
   res.render('item', {
@@ -71,19 +76,19 @@ app.get('/items/:id', asyncHandler(async (req, res) => {
 }));
 
 // Delete an item
-app.post('/items/:id/delete', asyncHandler(async (req, res) => {
+app.post('/inventory/items/:id/delete', asyncHandler(async (req, res) => {
   const id = req.params.id;
   await database.deleteItem(id);
   res.redirect('/');
 }));
 
 // View form to create a new item
-app.get('/new', (req, res) => {
+app.get('/inventory/new', (req, res) => {
   res.render('new');
 });
 
 // Create a new item
-app.post('/new', asyncHandler(async (req, res) => {
+app.post('/inventory/new', asyncHandler(async (req, res) => {
   const item = await database.newItem();
 
   item.name = req.body.name; // todo: error if not exists
@@ -99,7 +104,7 @@ app.post('/new', asyncHandler(async (req, res) => {
 
   await database.setItem(item.id, item);
 
-  res.redirect(`/items/${item.id}`);
+  res.redirect(`/inventory/items/${item.id}`);
 }));
 
 const server = app.listen(8080, function() {
