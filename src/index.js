@@ -97,7 +97,7 @@ app.post('/inventory/new', asyncHandler(async (req, res) => {
   if (req.files.length) {
     item.images = [req.files[0].filename];
   }
-  
+
   if (req.body['part-number']) {
     item.partNumber = req.body['part-number'];
   }
@@ -106,6 +106,12 @@ app.post('/inventory/new', asyncHandler(async (req, res) => {
 
   res.redirect(`/inventory/items/${item.id}`);
 }));
+
+app.use(function (err, req, res, next) {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
+  res.status(403)
+  res.send('Request could not be processed for security reasons. Please go back and try again.');
+});
 
 const server = app.listen(8080, function() {
   console.log(`Listening on http://localhost:${server.address().port}`);
