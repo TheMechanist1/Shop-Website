@@ -32,9 +32,10 @@ app.use('/uploads/', express.static('uploads'));
 app.use(require('./middleware/session'));
 
 // Implement file uploading
+// TODO: move after auth?
 app.use(require('./upload').any());
 
-// Implement form parsing, needed for CSRF protection
+// Implement form parsing, must happen before CSRF protection
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Implement CSRF protection
@@ -47,8 +48,12 @@ app.use(require('./middleware/render-props'));
 // All routes below this point may require authentication to access
 app.use(require('./authentication'));
 
+app.get('/', (req, res) => {
+  res.redirect('/inventory/');
+});
+
 // See all the items
-app.get('/', asyncHandler(async (req, res) => {
+app.get('/inventory/', asyncHandler(async (req, res) => {
   const allItemIds = await database.getAllItems();
 
   const items = [];
@@ -62,7 +67,7 @@ app.get('/', asyncHandler(async (req, res) => {
 }));
 
 // Get information for a specific item
-app.get('/items/:id', asyncHandler(async (req, res) => {
+app.get('/inventory/items/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
   const item = await database.getItem(id);
   res.render('item', {
@@ -71,19 +76,19 @@ app.get('/items/:id', asyncHandler(async (req, res) => {
 }));
 
 // Delete an item
-app.post('/items/:id/delete', asyncHandler(async (req, res) => {
+app.post('/inventory/items/:id/delete', asyncHandler(async (req, res) => {
   const id = req.params.id;
   await database.deleteItem(id);
   res.redirect('/');
 }));
 
 // View form to create a new item
-app.get('/new', (req, res) => {
+app.get('/inventory/new', (req, res) => {
   res.render('new');
 });
 
 // Create a new item
-app.post('/new', asyncHandler(async (req, res) => {
+app.post('/inventory/new', asyncHandler(async (req, res) => {
   const item = await database.newItem();
 
   item.name = req.body.name; // todo: error if not exists
@@ -92,13 +97,44 @@ app.post('/new', asyncHandler(async (req, res) => {
   if (req.files.length) {
     item.images = [req.files[0].filename];
   }
-  
+
   if (req.body['part-number']) {
     item.partNumber = req.body['part-number'];
   }
 
-  res.redirect(`/items/${item.id}`);
+  await database.setItem(item.id, item);
+
+  res.redirect(`/inventory/items/${item.id}`);
 }));
+
+// Edit item
+app.post('/inventory/items/:id/edit', asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const item = await database.getItem(id);
+
+  item.amount = +req.body.amount || 0;
+
+  await database.setItem(item.id, item);
+
+  res.redirect(`/inventory/items/${item.id}`);
+}));
+
+app.use(function(req, res, next){
+  res.status(404);
+
+  // respond with html page
+  if (req.accepts('html')) {
+    res.render('404');
+  } else {
+    res.send('404');
+  }
+});
+
+app.use(function (err, req, res, next) {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
+  res.status(403)
+  res.send('Request could not be processed for security reasons. Please go back and try again.');
+});
 
 const server = app.listen(8080, function() {
   console.log(`Listening on http://localhost:${server.address().port}`);

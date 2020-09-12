@@ -88,7 +88,7 @@
         <ul id="item-list">
           <% items.forEach(item => { %>
             <li class="item">
-              <a class="item-link" href="/items/<%= item.id %>">
+              <a class="item-link" href="/inventory/items/<%= item.id %>">
                 <% if (item.images.length) { %>
                   <div class="item-img">
                     <img src="/uploads/<%= item.images[0] %>" alt="<%= item.name %>" title="<%= item.name %>" width="100%" height="100%">

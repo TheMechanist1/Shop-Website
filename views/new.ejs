@@ -5,7 +5,7 @@
 </head>
 <body>
   <%- include('partials/nav') %>
-  <form action="/new" method="POST" enctype="multipart/form-data">
+  <form method="POST" enctype="multipart/form-data">
     <%- include('partials/csrf') %>
     <div>
       <label>Name <input name="name" required></label>

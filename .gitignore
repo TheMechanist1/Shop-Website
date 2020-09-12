@@ -1,3 +1,5 @@
 uploads
+data
+logs
 node_modules
 .env

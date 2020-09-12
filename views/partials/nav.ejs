@@ -10,12 +10,15 @@ nav {
 <nav id="nav">
   <a href="/">Inventory</a>
   <span class="nav-divider"></span>
-  <a href="/new">Add Parts</a>
+  <a href="/inventory/new">Add Parts</a>
 
   <% if (session.user) { %>
     <form style="float: right" action="/logout" method="POST">
       <%- include('csrf') %>
       Logged in as <%= session.user.name %>
+      <% if (session.user.isAdmin) { %>
+        (Admin)
+      <% } %>
       <button type="submit">Logout</button>
     </form>
   <% } %>
