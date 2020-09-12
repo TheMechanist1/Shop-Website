@@ -14,10 +14,14 @@
     </div>
   <% }) %>
 
-  <ul>
-    <li>Amount: <%= item.amount %></li>
-    <li>Part Number: <%= item.partNumber %></li>
-  </ul>
+  <form action="/inventory/items/<%= item.id %>/edit" method="POST">
+    <%- include('partials/csrf') %>
+    <ul>
+      <li>Amount: <input type="number" name="amount" value="<%= item.amount %>"></li>
+      <li>Part Number: <%= item.partNumber %></li>
+    </ul>
+    <input type="submit" value="Edit" name="edit-button">
+  </form>
 
   <form action="/inventory/items/<%= item.id %>/delete" method="POST">
     <%- include('partials/csrf') %>

@@ -107,6 +107,18 @@ app.post('/inventory/new', asyncHandler(async (req, res) => {
   res.redirect(`/inventory/items/${item.id}`);
 }));
 
+// Edit item
+app.post('/inventory/items/:id/edit', asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const item = await database.getItem(id);
+
+  item.amount = +req.body.amount || 0;
+
+  await database.setItem(item.id, item);
+
+  res.redirect(`/inventory/items/${item.id}`);
+}));
+
 app.use(function (err, req, res, next) {
   if (err.code !== 'EBADCSRFTOKEN') return next(err);
   res.status(403)
