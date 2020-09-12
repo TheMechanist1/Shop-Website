@@ -119,6 +119,17 @@ app.post('/inventory/items/:id/edit', asyncHandler(async (req, res) => {
   res.redirect(`/inventory/items/${item.id}`);
 }));
 
+app.use(function(req, res, next){
+  res.status(404);
+
+  // respond with html page
+  if (req.accepts('html')) {
+    res.render('404');
+  } else {
+    res.send('404');
+  }
+});
+
 app.use(function (err, req, res, next) {
   if (err.code !== 'EBADCSRFTOKEN') return next(err);
   res.status(403)
